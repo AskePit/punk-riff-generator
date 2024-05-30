@@ -1,1 +1,3 @@
-# punk-riff-generator
+# Punk riff generator
+
+Achtung! Deep WIP
