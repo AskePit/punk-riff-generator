@@ -75,27 +75,19 @@ function init() {
 let timeline = 0.0
 
 function playSineWave(tone, seconds) {
-    function sineWaveAt(sampleNumber, tone) {
-        var sampleFreq = context.sampleRate / tone
-        return Math.sin(2 * Math.PI * sampleNumber / sampleFreq)
-    }
+    const oscillator = context.createOscillator();
 
-    const buffer = new AudioBuffer({
-        numberOfChannels: 2,
-        length: context.sampleRate * seconds,
-        sampleRate: context.sampleRate,
-    });
+    oscillator.type = "triangle";
+    oscillator.detune.value = 0;
+    oscillator.frequency.setValueAtTime(tone, context.currentTime); // value in hertz
 
-    for (var i = 0; i < context.sampleRate * seconds; i++) {
-        let val = sineWaveAt(i, tone)
-        buffer.getChannelData(0)[i] = val
-        buffer.getChannelData(1)[i] = val
-    }
+    let gain = context.createGain();
+    gain.gain.value = 0.25
+    oscillator.connect(gain);
+    gain.connect(context.destination);
 
-    const source = context.createBufferSource();
-    source.buffer = buffer;
-    source.connect(context.destination);
-    source.start(timeline);
+    oscillator.start(context.currentTime + timeline)
+    oscillator.stop(context.currentTime + timeline + seconds)
 
     timeline += seconds
 }
@@ -122,4 +114,5 @@ button.onclick = () => {
         playSineWave(C4, half)
         playSineWave(B3, half)
     }
+    timeline = 0
 };
