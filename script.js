@@ -74,20 +74,30 @@ function init() {
 
 let timeline = 0.0
 
-function playSineWave(tone, seconds) {
-    const oscillator = context.createOscillator();
+const OVERLAP = -0.0
+const VOLUME = 0.25
+const DAMPING_START = 0.015
+const DAMPING_DURATION = 0.01
 
-    oscillator.type = "triangle";
-    oscillator.detune.value = 0;
-    oscillator.frequency.setValueAtTime(tone, context.currentTime); // value in hertz
-
-    let gain = context.createGain();
-    gain.gain.value = 0.25
-    oscillator.connect(gain);
+function playSound(notes, seconds) {
+    const gain = context.createGain();
+    gain.gain.value = VOLUME
     gain.connect(context.destination);
 
-    oscillator.start(context.currentTime + timeline)
-    oscillator.stop(context.currentTime + timeline + seconds)
+    for (let i = 0; i < notes.length; i++) {
+        const oscillator = context.createOscillator();
+
+        oscillator.type = "triangle";
+        oscillator.frequency.setValueAtTime(notes[i], context.currentTime); // value in hertz
+        oscillator.connect(gain);
+
+        const startTime = context.currentTime + timeline
+        const endTime = startTime + seconds
+
+        gain.gain.setTargetAtTime(0, endTime - DAMPING_START, DAMPING_DURATION);
+        oscillator.start(startTime)
+        oscillator.stop(endTime + DAMPING_DURATION)
+    }
 
     timeline += seconds
 }
@@ -105,14 +115,14 @@ button.onclick = () => {
     const half = fourth * 2
     const whole = half * 2
 
-    for(i = 0; i < 4; ++i) {
-        playSineWave(E4, 1.5 * fourth)
-        playSineWave(E4, eighth)
-        playSineWave(G4, 1.5 * eighth)
-        playSineWave(E4, 1.5 * eighth)
-        playSineWave(D4, eighth)
-        playSineWave(C4, half)
-        playSineWave(B3, half)
+    for(let i = 0; i < 4; ++i) {
+        playSound([E3, B3, E4], 1.5 * fourth)
+        playSound([E3, B3, E4], eighth)
+        playSound([G3, D4, G4], 1.5 * eighth)
+        playSound([E3, B3, E4], 1.5 * eighth)
+        playSound([D3, A3, D4], eighth)
+        playSound([C3, G3, C4], half)
+        playSound([B2, Fsh3, B3], half)
     }
     timeline = 0
 };
