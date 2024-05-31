@@ -67,44 +67,82 @@ const Ash6 = 1864.66;
 const B6 = 1975.53;
 
 let context;
+let distortion;
+let reverb;
+let gain;
+let biquadFilter;
 
-function init() {
+async function init() {
     context = new AudioContext();
-}
 
+    reverb = await createReverb();
+
+    gain = context.createGain();
+    gain.gain.value = VOLUME
+
+    distortion = context.createWaveShaper();
+    distortion.curve = makeDistortionCurve(40);
+
+    biquadFilter = context.createBiquadFilter();
+    biquadFilter.type = "lowpass";
+    biquadFilter.frequency.setValueAtTime(20000, context.currentTime);
+
+    distortion.connect(reverb)
+    biquadFilter.connect(reverb)
+    reverb.connect(gain)
+    gain.connect(context.destination)
+}
 let timeline = 0.0
 
-const OVERLAP = -0.0
 const VOLUME = 0.25
-const DAMPING_START = 0.015
-const DAMPING_DURATION = 0.01
+const DAMPING_START = 0
+const DAMPING_DURATION = 0.0
+
+async function createReverb() {
+    let convolver = context.createConvolver();
+  
+    // load impulse response from file
+    let response = await fetch("./WireGrind_s_0.8s_06w_100Hz_02m.wav");
+    let arraybuffer = await response.arrayBuffer();
+    convolver.buffer = await context.decodeAudioData(arraybuffer);
+  
+    return convolver;
+}
+
+function makeDistortionCurve(k = 20) {
+    const n_samples = 256
+    const curve = new Float32Array(n_samples);
+
+    for (let i = 0; i < n_samples; ++i ) {
+        const x = i * 2 / n_samples - 1;
+        curve[i] = (3 + k)*Math.atan(Math.sinh(x*0.25)*5) / (Math.PI + k * Math.abs(x));
+    }
+    return curve;
+}
 
 function playSound(notes, seconds) {
-    const gain = context.createGain();
-    gain.gain.value = VOLUME
-    gain.connect(context.destination);
+    const startTime = context.currentTime + timeline
+    const endTime = startTime + seconds
 
-    for (let i = 0; i < notes.length; i++) {
+    for (let noteIndex = 0; noteIndex < notes.length; noteIndex++) {
         const oscillator = context.createOscillator();
-
         oscillator.type = "triangle";
-        oscillator.frequency.setValueAtTime(notes[i], context.currentTime); // value in hertz
-        oscillator.connect(gain);
-
-        const startTime = context.currentTime + timeline
-        const endTime = startTime + seconds
-
-        gain.gain.setTargetAtTime(0, endTime - DAMPING_START, DAMPING_DURATION);
+        oscillator.frequency.setValueAtTime(notes[noteIndex], context.currentTime);
+        oscillator.connect(distortion);
+        
         oscillator.start(startTime)
         oscillator.stop(endTime + DAMPING_DURATION)
     }
 
+    gain.gain.setTargetAtTime(0, endTime - DAMPING_START, DAMPING_DURATION);
+    gain.gain.setTargetAtTime(VOLUME, endTime + DAMPING_DURATION, DAMPING_DURATION);
+
     timeline += seconds
 }
 
-button.onclick = () => {
+button.onclick = async () => {
     if (!context) {
-        init();
+        await init();
     }
 
     const bpm = 110
