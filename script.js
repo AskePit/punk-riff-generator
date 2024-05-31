@@ -1,70 +1,160 @@
 const button = document.querySelector("button");
 
 // Notes in Hz
-const C2 = 65.41;
-const Csh2 = 69.30;
-const D2 = 73.42;
-const Dsh2 = 77.78;
-const E2 = 82.41;
-const F2 = 87.31;
-const Fsh2 = 92.50;
-const G2 = 98.00;
-const Gsh2 = 103.83;
-const A2 = 110.00;
-const Ash2 = 116.54;
-const B2 = 123.47;
+const NOTES_HZ = [
+    65.41,
+    69.30,
+    73.42,
+    77.78,
+    82.41,
+    87.31,
+    92.50,
+    98.00,
+    103.83,
+    110.00,
+    116.54,
+    123.47,
+    
+    130.81,
+    138.59,
+    146.83,
+    155.56,
+    164.81,
+    174.61,
+    185.00,
+    196.00,
+    207.65,
+    220.00,
+    233.08,
+    246.94,
+    
+    261.63,
+    277.18,
+    293.66,
+    311.13,
+    329.63,
+    349.23,
+    369.99,
+    392.00,
+    415.30,
+    440.00,
+    466.16,
+    493.88,
+    
+    523.25,
+    554.37,
+    587.33,
+    622.25,
+    659.25,
+    698.46,
+    739.99,
+    783.99,
+    830.61,
+    880.00,
+    932.33,
+    987.77,
+    
+    1046.50,
+    1108.73,
+    1174.66,
+    1244.51,
+    1318.51,
+    1396.91,
+    1479.98,
+    1567.98,
+    1661.22,
+    1760.00,
+    1864.66,
+    1975.53,
+]
 
-const C3 = 130.81;
-const Csh3 = 138.59;
-const D3 = 146.83;
-const Dsh3 = 155.56;
-const E3 = 164.81;
-const F3 = 174.61;
-const Fsh3 = 185.00;
-const G3 = 196.00;
-const Gsh3 = 207.65;
-const A3 = 220.00;
-const Ash3 = 233.08;
-const B3 = 246.94;
+const C2   = NOTES_HZ[0];
+const Csh2 = NOTES_HZ[1];
+const D2   = NOTES_HZ[2];
+const Dsh2 = NOTES_HZ[3];
+const E2   = NOTES_HZ[4]; // E string
+const F2   = NOTES_HZ[5];
+const Fsh2 = NOTES_HZ[6];
+const G2   = NOTES_HZ[7];
+const Gsh2 = NOTES_HZ[8];
+const A2   = NOTES_HZ[9]; // A string
+const Ash2 = NOTES_HZ[10];
+const B2   = NOTES_HZ[11];
 
-const C4 = 261.63;
-const Csh4 = 277.18;
-const D4 = 293.66;
-const Dsh4 = 311.13;
-const E4 = 329.63;
-const F4 = 349.23;
-const Fsh4 = 369.99;
-const G4 = 392.00;
-const Gsh4 = 415.30;
-const A4 = 440.00;
-const Ash4 = 466.16;
-const B4 = 493.88;
+const C3   = NOTES_HZ[12];
+const Csh3 = NOTES_HZ[13];
+const D3   = NOTES_HZ[14]; // D string
+const Dsh3 = NOTES_HZ[15];
+const E3   = NOTES_HZ[16];
+const F3   = NOTES_HZ[17];
+const Fsh3 = NOTES_HZ[18];
+const G3   = NOTES_HZ[19]; // G string
+const Gsh3 = NOTES_HZ[20];
+const A3   = NOTES_HZ[21];
+const Ash3 = NOTES_HZ[22];
+const B3   = NOTES_HZ[23]; // B string
 
-const C5 = 523.25;
-const Csh5 = 554.37;
-const D5 = 587.33;
-const Dsh5 = 622.25;
-const E5 = 659.25;
-const F5 = 698.46;
-const Fsh5 = 739.99;
-const G5 = 783.99;
-const Gsh5 = 830.61;
-const A5 = 880.00;
-const Ash5 = 932.33;
-const B5 = 987.77;
+const C4   = NOTES_HZ[24];
+const Csh4 = NOTES_HZ[25];
+const D4   = NOTES_HZ[26];
+const Dsh4 = NOTES_HZ[27];
+const E4   = NOTES_HZ[28]; // e string
+const F4   = NOTES_HZ[29];
+const Fsh4 = NOTES_HZ[30];
+const G4   = NOTES_HZ[31];
+const Gsh4 = NOTES_HZ[32];
+const A4   = NOTES_HZ[33];
+const Ash4 = NOTES_HZ[34];
+const B4   = NOTES_HZ[35];
 
-const C6 = 1046.50;
-const Csh6 = 1108.73;
-const D6 = 1174.66;
-const Dsh6 = 1244.51;
-const E6 = 1318.51;
-const F6 = 1396.91;
-const Fsh6 = 1479.98;
-const G6 = 1567.98;
-const Gsh6 = 1661.22;
-const A6 = 1760.00;
-const Ash6 = 1864.66;
-const B6 = 1975.53;
+const C5   = NOTES_HZ[36];
+const Csh5 = NOTES_HZ[37];
+const D5   = NOTES_HZ[38];
+const Dsh5 = NOTES_HZ[39];
+const E5   = NOTES_HZ[40];
+const F5   = NOTES_HZ[41];
+const Fsh5 = NOTES_HZ[42];
+const G5   = NOTES_HZ[43];
+const Gsh5 = NOTES_HZ[44];
+const A5   = NOTES_HZ[45];
+const Ash5 = NOTES_HZ[46];
+const B5   = NOTES_HZ[47];
+
+const C6   = NOTES_HZ[48];
+const Csh6 = NOTES_HZ[49];
+const D6   = NOTES_HZ[50];
+const Dsh6 = NOTES_HZ[51];
+const E6   = NOTES_HZ[52];
+const F6   = NOTES_HZ[53];
+const Fsh6 = NOTES_HZ[54];
+const G6   = NOTES_HZ[55];
+const Gsh6 = NOTES_HZ[56];
+const A6   = NOTES_HZ[57];
+const Ash6 = NOTES_HZ[58];
+const B6   = NOTES_HZ[59];
+
+// Notes duration in terms of beats per second for 4/4
+const FOURTH = 1
+const EIGHTH = FOURTH / 2
+const SIXTEENTH = EIGHTH / 2
+const HALF = FOURTH * 2
+const WHOLE = HALF * 2
+
+const FOURTH_DOT = FOURTH * 1.5
+const EIGHTH_DOT = EIGHTH * 1.5
+const SIXTEENTH_DOT = SIXTEENTH * 1.5
+const HALF_DOT = HALF * 1.5
+
+const FOURTH_PAUSE = -FOURTH
+const EIGHTH_PAUSE = -EIGHTH
+const SIXTEENTH_PAUSE = -SIXTEENTH
+const HALF_PAUSE = -HALF
+const WHOLE_PAUSE = -WHOLE
+
+const FOURTH_DOT_PAUSE = -FOURTH_DOT
+const EIGHTH_DOT_PAUSE = -EIGHTH_DOT
+const SIXTEENTH_DOT_PAUSE = -SIXTEENTH_DOT
+const HALF_DOT_PAUSE = -HALF_DOT
 
 let context;
 let distortion;
@@ -80,7 +170,7 @@ async function init() {
     gain.gain.value = VOLUME
 
     distortion = context.createWaveShaper();
-    distortion.curve = makeDistortionCurve(50);
+    distortion.curve = makeDistortionCurve(200);
 
     compressor = context.createDynamicsCompressor();
     compressor.threshold.setValueAtTime(0, context.currentTime);
@@ -98,13 +188,13 @@ async function init() {
     // cut above 8500 Hz
     let cutHighs = context.createBiquadFilter();
     cutHighs.type = "lowpass";
-    cutHighs.frequency.setValueAtTime(8500, context.currentTime);
-    cutHighs.Q.setValueAtTime(0, context.currentTime);
+    cutHighs.frequency.setValueAtTime(22000, context.currentTime);
+    cutHighs.Q.setValueAtTime(1, context.currentTime);
 
     // cut below 120 Hz
     let cutLows = context.createBiquadFilter();
     cutLows.type = "highpass";
-    cutLows.frequency.setValueAtTime(120, context.currentTime);
+    cutLows.frequency.setValueAtTime(250, context.currentTime);
     cutLows.Q.setValueAtTime(0, context.currentTime);
 
     // boost around 3000 Hz
@@ -112,10 +202,10 @@ async function init() {
     peakMids.type = "peaking";
     peakMids.frequency.setValueAtTime(3150, context.currentTime);
     peakMids.Q.setValueAtTime(1.5, context.currentTime);
-    peakMids.gain.setValueAtTime(5, context.currentTime);
+    peakMids.gain.setValueAtTime(10, context.currentTime);
 
     compressor.connect(distortion)
-    distortion.connect(cutNosal)
+    distortion.connect(reverb)
     cutNosal.connect(cutHighs)
     cutHighs.connect(cutLows)
     cutLows.connect(peakMids)
@@ -125,6 +215,7 @@ async function init() {
 }
 let timeline = 0.0
 
+const BPM = 140
 const VOLUME = 0.25
 const DAMPING_START = 0
 const DAMPING_DURATION = 0.0
@@ -151,13 +242,14 @@ function makeDistortionCurve(k = 20) {
     return curve;
 }
 
-function playSound(notes, seconds) {
+function playSound(notes, duration) {
+    const seconds = duration / (BPM / 60)
     const startTime = context.currentTime + timeline
     const endTime = startTime + seconds
 
     for (let noteIndex = 0; noteIndex < notes.length; noteIndex++) {
         const oscillator = context.createOscillator();
-        oscillator.type = "sine";
+        oscillator.type = "triangle";
         oscillator.frequency.setValueAtTime(notes[noteIndex], context.currentTime);
         oscillator.connect(compressor);
         
@@ -171,27 +263,59 @@ function playSound(notes, seconds) {
     timeline += seconds
 }
 
+function playPause(duration) {
+    const seconds = Math.abs(duration) / (BPM / 60)
+    timeline += seconds
+}
+
+SHORT = 0
+FULL = 1
+
+function createPowerChord(tonica, type = FULL) {
+    const tonicaIndex = NOTES_HZ.indexOf(tonica)
+    return type == SHORT
+        ? [NOTES_HZ[tonicaIndex], NOTES_HZ[tonicaIndex + 7]]
+        : [NOTES_HZ[tonicaIndex], NOTES_HZ[tonicaIndex + 7], NOTES_HZ[tonicaIndex + 12]];
+}
+
+function generateNote(prevNote = undefined) {
+    return NOTES_HZ[ Math.floor(Math.random() * 16) + 4 ];
+}
+
+RYTHMS = [
+    [EIGHTH, EIGHTH, EIGHTH, EIGHTH],
+    [EIGHTH, EIGHTH, EIGHTH, EIGHTH, EIGHTH, EIGHTH, EIGHTH, EIGHTH],
+    [FOURTH, EIGHTH, FOURTH, EIGHTH, EIGHTH, EIGHTH],
+    [FOURTH_DOT, FOURTH, SIXTEENTH, EIGHTH_DOT, EIGHTH],
+    [EIGHTH, EIGHTH, EIGHTH_PAUSE, EIGHTH],
+    [EIGHTH, EIGHTH, EIGHTH_PAUSE, EIGHTH, EIGHTH, EIGHTH, EIGHTH_PAUSE, EIGHTH],
+]
+
 button.onclick = async () => {
     if (!context) {
         await init();
     }
-
-    const bpm = 110
-    const bps = bpm / 60
     
-    const fourth = 1 / bps
-    const eighth = fourth / 2
-    const half = fourth * 2
-    const whole = half * 2
+    const chords = [
+        createPowerChord(generateNote()),
+        createPowerChord(generateNote()),
+        createPowerChord(generateNote()),
+        createPowerChord(generateNote())
+    ];
 
-    for(let i = 0; i < 4; ++i) {
-        playSound([E3, B3, E4], 1.5 * fourth)
-        playSound([E3, B3, E4], eighth)
-        playSound([G3, D4, G4], 1.5 * eighth)
-        playSound([E3, B3, E4], 1.5 * eighth)
-        playSound([D3, A3, D4], eighth)
-        playSound([C3, G3, C4], half)
-        playSound([B2, Fsh3, B3], half)
+    const rythm = RYTHMS[4]
+
+    for(let bar = 0; bar < 4; ++bar) {
+        for(let ch = 0; ch < chords.length; ++ch) {
+            for(let i = 0; i < rythm.length; ++i) {
+                const duration = rythm[i];
+                if (duration >= 0) {
+                    playSound(chords[ch], rythm[i])
+                } else {
+                    playPause(duration)
+                }
+            }
+        }
     }
     timeline = 0
 };
