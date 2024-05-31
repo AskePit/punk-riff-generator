@@ -68,27 +68,58 @@ const B6 = 1975.53;
 
 let context;
 let distortion;
-let reverb;
+let compressor;
 let gain;
-let biquadFilter;
 
 async function init() {
     context = new AudioContext();
 
-    reverb = await createReverb();
+    let reverb = await createReverb();
 
     gain = context.createGain();
     gain.gain.value = VOLUME
 
     distortion = context.createWaveShaper();
-    distortion.curve = makeDistortionCurve(40);
+    distortion.curve = makeDistortionCurve(50);
 
-    biquadFilter = context.createBiquadFilter();
-    biquadFilter.type = "lowpass";
-    biquadFilter.frequency.setValueAtTime(20000, context.currentTime);
+    compressor = context.createDynamicsCompressor();
+    compressor.threshold.setValueAtTime(0, context.currentTime);
+    compressor.knee.setValueAtTime(40, context.currentTime);
+    compressor.ratio.setValueAtTime(12, context.currentTime);
+    compressor.attack.setValueAtTime(0, context.currentTime);
+    compressor.release.setValueAtTime(0.25, context.currentTime);
 
-    distortion.connect(reverb)
-    biquadFilter.connect(reverb)
+    // cut around 1000 Hz
+    let cutNosal = context.createBiquadFilter();
+    cutNosal.type = "notch";
+    cutNosal.frequency.setValueAtTime(1000, context.currentTime);
+    cutNosal.Q.setValueAtTime(4, context.currentTime);
+
+    // cut above 8500 Hz
+    let cutHighs = context.createBiquadFilter();
+    cutHighs.type = "lowpass";
+    cutHighs.frequency.setValueAtTime(8500, context.currentTime);
+    cutHighs.Q.setValueAtTime(0, context.currentTime);
+
+    // cut below 120 Hz
+    let cutLows = context.createBiquadFilter();
+    cutLows.type = "highpass";
+    cutLows.frequency.setValueAtTime(120, context.currentTime);
+    cutLows.Q.setValueAtTime(0, context.currentTime);
+
+    // boost around 3000 Hz
+    let peakMids = context.createBiquadFilter();
+    peakMids.type = "peaking";
+    peakMids.frequency.setValueAtTime(3150, context.currentTime);
+    peakMids.Q.setValueAtTime(1.5, context.currentTime);
+    peakMids.gain.setValueAtTime(5, context.currentTime);
+
+    compressor.connect(distortion)
+    distortion.connect(cutNosal)
+    cutNosal.connect(cutHighs)
+    cutHighs.connect(cutLows)
+    cutLows.connect(peakMids)
+    peakMids.connect(reverb)
     reverb.connect(gain)
     gain.connect(context.destination)
 }
@@ -126,9 +157,9 @@ function playSound(notes, seconds) {
 
     for (let noteIndex = 0; noteIndex < notes.length; noteIndex++) {
         const oscillator = context.createOscillator();
-        oscillator.type = "triangle";
+        oscillator.type = "sine";
         oscillator.frequency.setValueAtTime(notes[noteIndex], context.currentTime);
-        oscillator.connect(distortion);
+        oscillator.connect(compressor);
         
         oscillator.start(startTime)
         oscillator.stop(endTime + DAMPING_DURATION)
