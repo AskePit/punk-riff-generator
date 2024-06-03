@@ -1,4 +1,9 @@
 const button = document.querySelector("button");
+const input = document.querySelector("input");
+const rythmDivs = document.getElementsByClassName('rythm-tile')
+const riffText = document.querySelector("p");
+
+let rythmId = 0
 
 // Notes in Hz
 const NOTES_HZ = [
@@ -68,70 +73,70 @@ const NOTES_HZ = [
     1975.53,
 ]
 
-const C2   = NOTES_HZ[0];
-const Csh2 = NOTES_HZ[1];
-const D2   = NOTES_HZ[2];
-const Dsh2 = NOTES_HZ[3];
-const E2   = NOTES_HZ[4]; // E string
-const F2   = NOTES_HZ[5];
-const Fsh2 = NOTES_HZ[6];
-const G2   = NOTES_HZ[7];
-const Gsh2 = NOTES_HZ[8];
-const A2   = NOTES_HZ[9]; // A string
-const Ash2 = NOTES_HZ[10];
-const B2   = NOTES_HZ[11];
+const C2   = NOTES_HZ[0]
+const Csh2 = NOTES_HZ[1]
+const D2   = NOTES_HZ[2]
+const Dsh2 = NOTES_HZ[3]
+const E2   = NOTES_HZ[4] // E string
+const F2   = NOTES_HZ[5]
+const Fsh2 = NOTES_HZ[6]
+const G2   = NOTES_HZ[7]
+const Gsh2 = NOTES_HZ[8]
+const A2   = NOTES_HZ[9] // A string
+const Ash2 = NOTES_HZ[10]
+const B2   = NOTES_HZ[11]
 
-const C3   = NOTES_HZ[12];
-const Csh3 = NOTES_HZ[13];
-const D3   = NOTES_HZ[14]; // D string
-const Dsh3 = NOTES_HZ[15];
-const E3   = NOTES_HZ[16];
-const F3   = NOTES_HZ[17];
-const Fsh3 = NOTES_HZ[18];
-const G3   = NOTES_HZ[19]; // G string
-const Gsh3 = NOTES_HZ[20];
-const A3   = NOTES_HZ[21];
-const Ash3 = NOTES_HZ[22];
-const B3   = NOTES_HZ[23]; // B string
+const C3   = NOTES_HZ[12]
+const Csh3 = NOTES_HZ[13]
+const D3   = NOTES_HZ[14] // D string
+const Dsh3 = NOTES_HZ[15]
+const E3   = NOTES_HZ[16]
+const F3   = NOTES_HZ[17]
+const Fsh3 = NOTES_HZ[18]
+const G3   = NOTES_HZ[19] // G string
+const Gsh3 = NOTES_HZ[20]
+const A3   = NOTES_HZ[21]
+const Ash3 = NOTES_HZ[22]
+const B3   = NOTES_HZ[23] // B string
 
-const C4   = NOTES_HZ[24];
-const Csh4 = NOTES_HZ[25];
-const D4   = NOTES_HZ[26];
-const Dsh4 = NOTES_HZ[27];
-const E4   = NOTES_HZ[28]; // e string
-const F4   = NOTES_HZ[29];
-const Fsh4 = NOTES_HZ[30];
-const G4   = NOTES_HZ[31];
-const Gsh4 = NOTES_HZ[32];
-const A4   = NOTES_HZ[33];
-const Ash4 = NOTES_HZ[34];
-const B4   = NOTES_HZ[35];
+const C4   = NOTES_HZ[24]
+const Csh4 = NOTES_HZ[25]
+const D4   = NOTES_HZ[26]
+const Dsh4 = NOTES_HZ[27]
+const E4   = NOTES_HZ[28] // e string
+const F4   = NOTES_HZ[29]
+const Fsh4 = NOTES_HZ[30]
+const G4   = NOTES_HZ[31]
+const Gsh4 = NOTES_HZ[32]
+const A4   = NOTES_HZ[33]
+const Ash4 = NOTES_HZ[34]
+const B4   = NOTES_HZ[35]
 
-const C5   = NOTES_HZ[36];
-const Csh5 = NOTES_HZ[37];
-const D5   = NOTES_HZ[38];
-const Dsh5 = NOTES_HZ[39];
-const E5   = NOTES_HZ[40];
-const F5   = NOTES_HZ[41];
-const Fsh5 = NOTES_HZ[42];
-const G5   = NOTES_HZ[43];
-const Gsh5 = NOTES_HZ[44];
-const A5   = NOTES_HZ[45];
-const Ash5 = NOTES_HZ[46];
-const B5   = NOTES_HZ[47];
+const C5   = NOTES_HZ[36]
+const Csh5 = NOTES_HZ[37]
+const D5   = NOTES_HZ[38]
+const Dsh5 = NOTES_HZ[39]
+const E5   = NOTES_HZ[40]
+const F5   = NOTES_HZ[41]
+const Fsh5 = NOTES_HZ[42]
+const G5   = NOTES_HZ[43]
+const Gsh5 = NOTES_HZ[44]
+const A5   = NOTES_HZ[45]
+const Ash5 = NOTES_HZ[46]
+const B5   = NOTES_HZ[47]
 
-const C6   = NOTES_HZ[48];
-const Csh6 = NOTES_HZ[49];
-const D6   = NOTES_HZ[50];
-const Dsh6 = NOTES_HZ[51];
-const E6   = NOTES_HZ[52];
-const F6   = NOTES_HZ[53];
-const Fsh6 = NOTES_HZ[54];
-const G6   = NOTES_HZ[55];
-const Gsh6 = NOTES_HZ[56];
-const A6   = NOTES_HZ[57];
-const Ash6 = NOTES_HZ[58];
-const B6   = NOTES_HZ[59];
+const C6   = NOTES_HZ[48]
+const Csh6 = NOTES_HZ[49]
+const D6   = NOTES_HZ[50]
+const Dsh6 = NOTES_HZ[51]
+const E6   = NOTES_HZ[52]
+const F6   = NOTES_HZ[53]
+const Fsh6 = NOTES_HZ[54]
+const G6   = NOTES_HZ[55]
+const Gsh6 = NOTES_HZ[56]
+const A6   = NOTES_HZ[57]
+const Ash6 = NOTES_HZ[58]
+const B6   = NOTES_HZ[59]
 
 // Notes duration in terms of beats per second for 4/4
 const FOURTH = 1
@@ -162,47 +167,47 @@ let compressor;
 let gain;
 
 async function init() {
-    context = new AudioContext();
+    context = new AudioContext()
 
-    let reverb = await createReverb();
+    let reverb = await createReverb()
 
-    gain = context.createGain();
+    gain = context.createGain()
     gain.gain.value = VOLUME
 
-    distortion = context.createWaveShaper();
-    distortion.curve = makeDistortionCurve(200);
+    distortion = context.createWaveShaper()
+    distortion.curve = makeDistortionCurve(200)
 
-    compressor = context.createDynamicsCompressor();
-    compressor.threshold.setValueAtTime(0, context.currentTime);
-    compressor.knee.setValueAtTime(40, context.currentTime);
-    compressor.ratio.setValueAtTime(12, context.currentTime);
-    compressor.attack.setValueAtTime(0, context.currentTime);
-    compressor.release.setValueAtTime(0.25, context.currentTime);
+    compressor = context.createDynamicsCompressor()
+    compressor.threshold.setValueAtTime(0, context.currentTime)
+    compressor.knee.setValueAtTime(40, context.currentTime)
+    compressor.ratio.setValueAtTime(12, context.currentTime)
+    compressor.attack.setValueAtTime(0, context.currentTime)
+    compressor.release.setValueAtTime(0.25, context.currentTime)
 
     // cut around 1000 Hz
-    let cutNosal = context.createBiquadFilter();
-    cutNosal.type = "notch";
-    cutNosal.frequency.setValueAtTime(1000, context.currentTime);
-    cutNosal.Q.setValueAtTime(4, context.currentTime);
+    let cutNosal = context.createBiquadFilter()
+    cutNosal.type = "notch"
+    cutNosal.frequency.setValueAtTime(1000, context.currentTime)
+    cutNosal.Q.setValueAtTime(4, context.currentTime)
 
     // cut above 8500 Hz
-    let cutHighs = context.createBiquadFilter();
-    cutHighs.type = "lowpass";
-    cutHighs.frequency.setValueAtTime(22000, context.currentTime);
-    cutHighs.Q.setValueAtTime(1, context.currentTime);
+    let cutHighs = context.createBiquadFilter()
+    cutHighs.type = "lowpass"
+    cutHighs.frequency.setValueAtTime(22000, context.currentTime)
+    cutHighs.Q.setValueAtTime(1, context.currentTime)
 
     // cut below 120 Hz
-    let cutLows = context.createBiquadFilter();
-    cutLows.type = "highpass";
-    cutLows.frequency.setValueAtTime(250, context.currentTime);
-    cutLows.Q.setValueAtTime(0, context.currentTime);
+    let cutLows = context.createBiquadFilter()
+    cutLows.type = "highpass"
+    cutLows.frequency.setValueAtTime(250, context.currentTime)
+    cutLows.Q.setValueAtTime(0, context.currentTime)
 
     // boost around 3000 Hz
-    let peakMids = context.createBiquadFilter();
-    peakMids.type = "peaking";
-    peakMids.frequency.setValueAtTime(3150, context.currentTime);
-    peakMids.Q.setValueAtTime(1.5, context.currentTime);
-    peakMids.gain.setValueAtTime(10, context.currentTime);
+    let peakMids = context.createBiquadFilter()
+    peakMids.type = "peaking"
+    peakMids.frequency.setValueAtTime(3150, context.currentTime)
+    peakMids.Q.setValueAtTime(1.5, context.currentTime)
+    peakMids.gain.setValueAtTime(10, context.currentTime)
 
     compressor.connect(distortion)
     distortion.connect(reverb)
@@ -215,7 +220,7 @@ async function init() {
 }
 let timeline = 0.0
 
-const BPM = 140
+let BPM = 140
 const VOLUME = 0.25
 const DAMPING_START = 0
 const DAMPING_DURATION = 0.0
@@ -224,20 +229,20 @@ async function createReverb() {
     let convolver = context.createConvolver();
   
     // load impulse response from file
-    let response = await fetch("./WireGrind_s_0.8s_06w_100Hz_02m.wav");
-    let arraybuffer = await response.arrayBuffer();
-    convolver.buffer = await context.decodeAudioData(arraybuffer);
+    let response = await fetch("./WireGrind_s_0.8s_06w_100Hz_02m.wav")
+    let arraybuffer = await response.arrayBuffer()
+    convolver.buffer = await context.decodeAudioData(arraybuffer)
   
-    return convolver;
+    return convolver
 }
 
 function makeDistortionCurve(k = 20) {
     const n_samples = 256
-    const curve = new Float32Array(n_samples);
+    const curve = new Float32Array(n_samples)
 
     for (let i = 0; i < n_samples; ++i ) {
         const x = i * 2 / n_samples - 1;
-        curve[i] = (3 + k)*Math.atan(Math.sinh(x*0.25)*5) / (Math.PI + k * Math.abs(x));
+        curve[i] = (3 + k)*Math.atan(Math.sinh(x*0.25)*5) / (Math.PI + k * Math.abs(x))
     }
     return curve;
 }
@@ -248,17 +253,17 @@ function playSound(notes, duration) {
     const endTime = startTime + seconds
 
     for (let noteIndex = 0; noteIndex < notes.length; noteIndex++) {
-        const oscillator = context.createOscillator();
-        oscillator.type = "triangle";
-        oscillator.frequency.setValueAtTime(notes[noteIndex], context.currentTime);
-        oscillator.connect(compressor);
+        const oscillator = context.createOscillator()
+        oscillator.type = "triangle"
+        oscillator.frequency.setValueAtTime(notes[noteIndex], context.currentTime)
+        oscillator.connect(compressor)
         
         oscillator.start(startTime)
         oscillator.stop(endTime + DAMPING_DURATION)
     }
 
-    gain.gain.setTargetAtTime(0, endTime - DAMPING_START, DAMPING_DURATION);
-    gain.gain.setTargetAtTime(VOLUME, endTime + DAMPING_DURATION, DAMPING_DURATION);
+    gain.gain.setTargetAtTime(0, endTime - DAMPING_START, DAMPING_DURATION)
+    gain.gain.setTargetAtTime(VOLUME, endTime + DAMPING_DURATION, DAMPING_DURATION)
 
     timeline += seconds
 }
@@ -275,26 +280,50 @@ function createPowerChord(tonica, type = FULL) {
     const tonicaIndex = NOTES_HZ.indexOf(tonica)
     return type == SHORT
         ? [NOTES_HZ[tonicaIndex], NOTES_HZ[tonicaIndex + 7]]
-        : [NOTES_HZ[tonicaIndex], NOTES_HZ[tonicaIndex + 7], NOTES_HZ[tonicaIndex + 12]];
+        : [NOTES_HZ[tonicaIndex], NOTES_HZ[tonicaIndex + 7], NOTES_HZ[tonicaIndex + 12]]
+}
+
+function getRandomInt(min, max) {
+    const minCeiled = Math.ceil(min);
+    const maxFloored = Math.floor(max);
+    return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
 }
 
 function generateNote(prevNote = undefined) {
-    return NOTES_HZ[ Math.floor(Math.random() * 16) + 4 ];
+    const noteIndex = getRandomInt(4, 16)
+    console.log(noteIndex)
+    const note = NOTES_HZ[ noteIndex ]
+    return note
 }
 
 RYTHMS = [
     [EIGHTH, EIGHTH, EIGHTH, EIGHTH],
     [EIGHTH, EIGHTH, EIGHTH, EIGHTH, EIGHTH, EIGHTH, EIGHTH, EIGHTH],
     [FOURTH, EIGHTH, FOURTH, EIGHTH, EIGHTH, EIGHTH],
-    [FOURTH_DOT, FOURTH, SIXTEENTH, EIGHTH_DOT, EIGHTH],
+    [FOURTH_DOT, FOURTH, EIGHTH, EIGHTH, EIGHTH],
     [EIGHTH, EIGHTH, EIGHTH_PAUSE, EIGHTH],
     [EIGHTH, EIGHTH, EIGHTH_PAUSE, EIGHTH, EIGHTH, EIGHTH, EIGHTH_PAUSE, EIGHTH],
 ]
+
+for (let i = 0; i < rythmDivs.length; ++i) {
+    rythmDivs[i].onclick = () => {
+        for (let j = 0; j < rythmDivs.length; ++j) {
+            if (i == j) {
+                rythmDivs[j].classList.add('active')
+                rythmId = j
+            } else {
+                rythmDivs[j].classList.remove('active')
+            }
+        }
+    }
+}
 
 button.onclick = async () => {
     if (!context) {
         await init();
     }
+
+    BPM = input.value
     
     const chords = [
         createPowerChord(generateNote()),
@@ -303,7 +332,42 @@ button.onclick = async () => {
         createPowerChord(generateNote())
     ];
 
-    const rythm = RYTHMS[4]
+    riffText.textContent = ''
+    for(let ch = 0; ch < chords.length; ++ch) {
+        const tonica = chords[ch][0]
+        const tonicaIndex = NOTES_HZ.indexOf(tonica) % 12
+        let tonicaText = ''
+
+        if (tonicaIndex == 0) {
+            tonicaText = 'C5'
+        } else if (tonicaIndex == 1) {
+            tonicaText = 'C#5'
+        } else if (tonicaIndex == 2) {
+            tonicaText = 'D5'
+        } else if (tonicaIndex == 3) {
+            tonicaText = 'D#5'
+        } else if (tonicaIndex == 4) {
+            tonicaText = 'E5'
+        } else if (tonicaIndex == 5) {
+            tonicaText = 'F5'
+        } else if (tonicaIndex == 6) {
+            tonicaText = 'F#5'
+        } else if (tonicaIndex == 7) {
+            tonicaText = 'G5'
+        } else if (tonicaIndex == 8) {
+            tonicaText = 'G#5'
+        } else if (tonicaIndex == 9) {
+            tonicaText = 'A5'
+        } else if (tonicaIndex == 10) {
+            tonicaText = 'A#5'
+        } else if (tonicaIndex == 11) {
+            tonicaText = 'B5'
+        }
+
+        riffText.textContent += tonicaText + ' '
+    }
+
+    const rythm = RYTHMS[rythmId]
 
     for(let bar = 0; bar < 4; ++bar) {
         for(let ch = 0; ch < chords.length; ++ch) {

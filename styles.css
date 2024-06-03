@@ -2,8 +2,29 @@ body {
     margin: 50px 80px
 }
 
+.ver-flex {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    flex: 0 1 auto;
+    align-items: center;
+    gap: 0;
+}
+
+.hor-flex {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.grid-flex {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: 500px;
+}
+
 button {
-    margin-left: 100px;
     padding: 20px 50px;
     border-radius: 5px;
     border-width: 1px;
@@ -11,4 +32,15 @@ button {
 
 h1 {
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
+}
+
+.rythm-tile {
+    border: 1px solid #ddd;
+    width: 200px;
+    text-align: center;
+    margin: 5px 0px;
+}
+
+.rythm-tile.active {
+    border: 3px solid #555;
 }
