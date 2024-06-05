@@ -166,6 +166,8 @@ let distortion;
 let compressor;
 let gain;
 
+let soundNodes = []
+
 async function init() {
     context = new AudioContext()
 
@@ -260,6 +262,8 @@ function playSound(notes, duration) {
         
         oscillator.start(startTime)
         oscillator.stop(endTime + DAMPING_DURATION)
+
+        soundNodes.push(oscillator)
     }
 
     gain.gain.setTargetAtTime(0, endTime - DAMPING_START, DAMPING_DURATION)
@@ -322,6 +326,11 @@ button.onclick = async () => {
     if (!context) {
         await init();
     }
+
+    for (let i = 0; i < soundNodes.length; ++i) {
+        soundNodes[i].stop(0)
+    }
+    soundNodes = []
 
     BPM = input.value
     
