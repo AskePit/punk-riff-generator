@@ -8,38 +8,42 @@
 	</head>
 
 	<body>
-		<div class="ver-flex">
-			<div><h1>Punk riff generator</h1></div>
-			<div class="hor-flex">
-				<div class="ver-flex">
+		<div class="centrator-flex">
+			<h1>Punk riff generator</h1>
+			<div class="main-flex">
+				<div class="rythm-block">
 					<h3>Rythm</h3>
-					<div class="rythm-tile active">
-						<img src="img/rythm01.png"/>
+					<div class="rythm-row">
+						<div class="rythm-tile active">
+							<img src="img/rythm01.png"/>
+						</div>
+						<div class="rythm-tile">
+							<img src="img/rythm02.png"/>
+						</div>
+						<div class="rythm-tile">
+							<img src="img/rythm03.png"/>
+						</div>
 					</div>
-					<div class="rythm-tile">
-						<img src="img/rythm02.png"/>
-					</div>
-					<div class="rythm-tile">
-						<img src="img/rythm03.png"/>
-					</div>
-					<div class="rythm-tile">
-						<img src="img/rythm04.png"/>
-					</div>
-					<div class="rythm-tile">
-						<img src="img/rythm05.png"/>
-					</div>
-					<div class="rythm-tile">
-						<img src="img/rythm06.png"/>
+					<div class="rythm-row">
+						<div class="rythm-tile">
+							<img src="img/rythm04.png"/>
+						</div>
+						<div class="rythm-tile">
+							<img src="img/rythm05.png"/>
+						</div>
+						<div class="rythm-tile">
+							<img src="img/rythm06.png"/>
+						</div>
 					</div>
 				</div>
-			
-				<div class="ver-flex">
-					<div><input value="145">bpm</input></div>
-					<div><button>Play</button></div>
+				<div class="speed-block">
+					<h3>Speed</h3>
+					<input value="145">bpm</input>
+					<button>Play</button>
 				</div>
-
-				<div class="ver-flex">
-					<h3>Result riff</h3>
+				<hr>
+				<div class="result-block">
+					<h3>Your riff</h3>
 					<p></p>
 				</div>
 			</div>
