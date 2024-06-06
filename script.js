@@ -95,7 +95,7 @@ const HALF_DOT_PAUSE = -HALF_DOT
 let BPM = 140
 const VOLUME = 0.1
 const DAMPING_START = 0
-const DAMPING_DURATION = 0.23
+const DAMPING_DURATION = 0.1
 const DEBUG_MODE = true
 
 // Runtime
