@@ -3,8 +3,6 @@ const input = document.querySelector("input");
 const rythmDivs = document.getElementsByClassName('rythm-tile')
 const riffText = document.querySelector("p");
 
-let rythmId = 3
-
 const C2   = 0
 const Csh2 = 1
 const D2   = 2
@@ -93,6 +91,18 @@ const EIGHTH_DOT_PAUSE = -EIGHTH_DOT
 const SIXTEENTH_DOT_PAUSE = -SIXTEENTH_DOT
 const HALF_DOT_PAUSE = -HALF_DOT
 
+// Settings
+let BPM = 140
+const VOLUME = 0.1
+const DAMPING_START = 0
+const DAMPING_DURATION = 0.23
+const DEBUG_MODE = true
+
+// Runtime
+let rythmId = 3
+
+let effectsChain = []
+
 let context
 let distortion
 let compressor
@@ -102,6 +112,8 @@ let guitarSample
 let SAMPLE_NOTE
 
 let soundNodes = []
+
+let timeline = 0.0
 
 async function init() {
     context = new AudioContext()
@@ -146,7 +158,7 @@ async function init() {
     cutSand2.type = "peaking"
     cutSand2.frequency.setValueAtTime(10000, context.currentTime)
     cutSand2.Q.setValueAtTime(3, context.currentTime)
-    cutSand2.gain.setValueAtTime(-15, context.currentTime)
+    cutSand2.gain.setValueAtTime(-14, context.currentTime)
 
     // boost below 500 Hz
     let boostLow = context.createBiquadFilter()
@@ -161,28 +173,30 @@ async function init() {
     peakMids.Q.setValueAtTime(0.5, context.currentTime)
     peakMids.gain.setValueAtTime(3, context.currentTime)
 
-    compressor.connect(distortion)
-    distortion.connect(cutHighs)
-    cutHighs.connect(gumDown)
-    gumDown.connect(cutSand)
-    cutSand.connect(cutSand2)
-    cutSand2.connect(boostLow)
-    boostLow.connect(peakMids)
-    peakMids.connect(reverb)
-    reverb.connect(gain)
-    gain.connect(context.destination)
-}
-let timeline = 0.0
+    effectsChain = [
+        //compressor,
+        distortion,
+        cutHighs,
+        gumDown,
+        cutSand,
+        cutSand2,
+        boostLow,
+        peakMids,
+        reverb,
+        gain,
+        context.destination
+    ]
 
-let BPM = 140
-const VOLUME = 0.25
-const DAMPING_START = 0
-const DAMPING_DURATION = 0.23
+    for (let i = 0; i < effectsChain.length - 1; ++i) {
+        effectsChain[i].connect(effectsChain[i + 1])
+    }
+}
 
 async function createReverb() {
     const convolver = context.createConvolver();
   
     // load impulse response from file
+    convolver.normalize = false;
     convolver.buffer = await fetch("./room.wav")
         .then(response => response.arrayBuffer())
         .then(buffer => context.decodeAudioData(buffer))
@@ -222,8 +236,8 @@ function playSound(notes, duration) {
 
     for (let noteIndex = 0; noteIndex < notes.length; noteIndex++) {
         const sample = createSampleSource(notes[noteIndex])
-        
-        sample.connect(distortion)
+
+        sample.connect(effectsChain[0])
         sample.start(startTime)
         sample.stop(endTime + DAMPING_DURATION)
 
@@ -298,7 +312,14 @@ button.onclick = async () => {
 
     BPM = input.value
     
-    const chords = [
+    const chords = DEBUG_MODE
+    ? [
+        createPowerChord(Fsh2),
+        createPowerChord(E2),
+        createPowerChord(G2),
+        createPowerChord(E2)
+    ]
+    : [
         createPowerChord(generateNote()),
         createPowerChord(generateNote()),
         createPowerChord(generateNote()),
