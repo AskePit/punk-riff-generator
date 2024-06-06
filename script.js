@@ -94,9 +94,10 @@ const HALF_DOT_PAUSE = -HALF_DOT
 // Settings
 let BPM = 140
 const VOLUME = 0.1
+const GAIN = 400
 const DAMPING_START = 0
-const DAMPING_DURATION = 0.1
-const DEBUG_MODE = true
+const DAMPING_DURATION = 0.03
+const DEBUG_MODE = false
 
 // Runtime
 let rythmId = 3
@@ -125,56 +126,48 @@ async function init() {
     gain.gain.value = VOLUME
 
     distortion = context.createWaveShaper()
-    distortion.curve = makeDistortionCurve(500)
+    distortion.curve = makeDistortionCurve(GAIN)
 
-    compressor = context.createDynamicsCompressor()
-    compressor.threshold.setValueAtTime(0, context.currentTime)
-    compressor.knee.setValueAtTime(40, context.currentTime)
-    compressor.ratio.setValueAtTime(12, context.currentTime)
-    compressor.attack.setValueAtTime(0, context.currentTime)
-    compressor.release.setValueAtTime(0.25, context.currentTime)
-
-    // cut above 8500 Hz
+    // cut above 8400 Hz
     let cutHighs = context.createBiquadFilter()
     cutHighs.type = "lowpass"
-    cutHighs.frequency.setValueAtTime(8500, context.currentTime)
+    cutHighs.frequency.setValueAtTime(8400, context.currentTime)
     cutHighs.Q.setValueAtTime(0, context.currentTime)
 
-    // cut around 1000 Hz
+    // cut around 1500 Hz
     let gumDown = context.createBiquadFilter()
     gumDown.type = "notch"
-    gumDown.frequency.setValueAtTime(1400, context.currentTime)
+    gumDown.frequency.setValueAtTime(1500, context.currentTime)
     gumDown.Q.setValueAtTime(5.5, context.currentTime)
 
-    // cut around 4800 Hz
+    // cut around 4900 Hz
     let cutSand = context.createBiquadFilter()
     cutSand.type = "peaking"
     cutSand.frequency.setValueAtTime(4900, context.currentTime)
     cutSand.Q.setValueAtTime(3, context.currentTime)
     cutSand.gain.setValueAtTime(-8, context.currentTime)
 
-    // cut around 4800 Hz
+    // cut around 10000 Hz
     let cutSand2 = context.createBiquadFilter()
     cutSand2.type = "peaking"
     cutSand2.frequency.setValueAtTime(10000, context.currentTime)
     cutSand2.Q.setValueAtTime(3, context.currentTime)
     cutSand2.gain.setValueAtTime(-14, context.currentTime)
 
-    // boost below 500 Hz
+    // boost below 200 Hz
     let boostLow = context.createBiquadFilter()
     boostLow.type = "lowshelf"
     boostLow.frequency.setValueAtTime(200, context.currentTime)
     boostLow.gain.setValueAtTime(2, context.currentTime)
 
-    // boost around 3000 Hz
+    // boost around 1350 Hz
     let peakMids = context.createBiquadFilter()
     peakMids.type = "peaking"
-    peakMids.frequency.setValueAtTime(850, context.currentTime)
+    peakMids.frequency.setValueAtTime(1350, context.currentTime)
     peakMids.Q.setValueAtTime(0.5, context.currentTime)
-    peakMids.gain.setValueAtTime(3, context.currentTime)
+    peakMids.gain.setValueAtTime(7, context.currentTime)
 
     effectsChain = [
-        //compressor,
         distortion,
         cutHighs,
         gumDown,
@@ -197,7 +190,7 @@ async function createReverb() {
   
     // load impulse response from file
     convolver.normalize = false;
-    convolver.buffer = await fetch("./room.wav")
+    convolver.buffer = await fetch("./sound/room.wav")
         .then(response => response.arrayBuffer())
         .then(buffer => context.decodeAudioData(buffer))
   
@@ -206,7 +199,7 @@ async function createReverb() {
 
 async function createGuitarSample() {
     SAMPLE_NOTE = D3;
-    return fetch("./guitar_d_string.wav")
+    return fetch("./sound/guitar_d_string.wav")
         .then(response => response.arrayBuffer())
         .then(buffer => context.decodeAudioData(buffer))
 }
@@ -219,12 +212,20 @@ function createSampleSource(noteToPlay) {
 }
 
 function makeDistortionCurve(k = 20) {
-    const n_samples = 256
+    const n_samples = 512
     const curve = new Float32Array(n_samples)
 
     for (let i = 0; i < n_samples; ++i ) {
         const x = i * 2 / n_samples - 1;
-        curve[i] = (3 + k)*Math.atan(Math.sinh(x*0.25)*5) / (Math.PI + k * Math.abs(x))
+
+        //curve[i] = Math.sign(k*x)
+
+        //curve[i] = Math.tanh(k*x)
+        //curve[i] = (3 + k)*Math.atan(Math.sinh(x*0.25)*5) / (Math.PI + k * Math.abs(x))
+        //curve[i] = 1/(1 + Math.exp(-k*x))
+        //curve[i] = (2/Math.PI)*Math.atan(k*x*Math.PI/2)
+        curve[i] = x*k/(1 + Math.abs(k*x))
+        
     }
     return curve;
 }
