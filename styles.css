@@ -5,12 +5,14 @@ body {
 .centrator-flex {
     display: flex;
     flex-direction: column;
+    flex-wrap: wrap;
     align-items: center;
 }
 
 .main-flex {
     display: flex;
     flex-direction: column;
+    flex-wrap: wrap;
     align-items: left;
     gap: 20px;
 }
@@ -34,6 +36,7 @@ body {
 .rythm-row {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     gap: 10px;
 }
 
@@ -55,6 +58,7 @@ body {
     flex-direction: row;
     gap: 20px;
     align-items: flex-end;
+    flex-wrap: wrap;
 }
 
 button {
