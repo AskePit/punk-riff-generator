@@ -8,44 +8,56 @@
 	</head>
 
 	<body>
-		<div class="centrator-flex">
-			<h1>Punk riff generator</h1>
-			<div class="main-flex">
-				<div class="rythm-block">
-					<h3>Rythm</h3>
-					<div class="rythm-row">
-						<div class="rythm-tile">
-							<img src="img/rythm01.png"/>
-						</div>
-						<div class="rythm-tile">
-							<img src="img/rythm02.png"/>
-						</div>
-						<div class="rythm-tile">
-							<img src="img/rythm03.png"/>
-						</div>
-					</div>
-					<div class="rythm-row">
-						<div class="rythm-tile active">
-							<img src="img/rythm04.png"/>
-						</div>
-						<div class="rythm-tile">
-							<img src="img/rythm05.png"/>
-						</div>
-						<div class="rythm-tile">
-							<img src="img/rythm06.png"/>
-						</div>
-					</div>
-				</div>
-				<div class="speed-block">
-					<h3>Speed</h3>
-					<input value="145">bpm</input>
-					<button>Play</button>
-				</div>
-				<hr>
-				<div class="result-block">
-					<h3>Your riff</h3>
-					<p></p>
-				</div>
+		<div id="global-grid">
+			<div id="north">
+				<img id="logo" src="img/logos/logo1.png"/>
+				<h3>Rythm</h3>
+			</div>
+			<div id="center">
+				<table>
+					<tr>
+						<td class="rythm-tile"><img src="img/rythm01.png"></td>
+						<td class="rythm-tile"><img src="img/rythm02.png"></td>
+						<td class="rythm-tile"><img src="img/rythm03.png"></td>
+					</tr>
+					<tr>
+						<td class="rythm-tile"><img src="img/rythm04.png"></td>
+						<td class="rythm-tile"><img src="img/rythm05.png"></td>
+						<td class="rythm-tile"><img src="img/rythm06.png"></td>
+					</tr>
+				</table>
+			</div>
+			<div id="west">
+				<table class="table-expand">
+					<tr><td class="td-expand"></td></tr>
+					<tr><td class="td-expand"></td></tr>
+				</table>
+			</div>
+			<div id="east">
+				<table class="table-expand">
+					<tr><td class="td-expand"></td></tr>
+					<tr><td class="td-expand"></td></tr>
+				</table>
+			</div>
+			<div id="south">
+				<h3>Speed</h3>
+				<input value="145"></input>
+				<div class="unit">bpm</div>
+				<button>
+					<svg xmlns="http://www.w3.org/2000/svg" version="1.1" class="svg-triangle" width='100' height='100'>
+						<path d="M 90,50 10,90 10,10 z"/>
+					</svg>
+				</button>
+			</div>
+			<div id="south2-west">
+
+			</div>
+			<div id="south2">
+				<h3>Your riff&nbsp;:&nbsp;</h3>
+				<div id="riff"></div>
+			</div>
+			<div id="south2-east">
+
 			</div>
 		</div>
 	</body>
