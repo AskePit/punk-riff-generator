@@ -101,47 +101,29 @@ td {
     margin: 0px;
 }
 
-.centrator-flex {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.main-flex {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    align-items: left;
-    gap: 20px;
-}
-
-.ver-flex {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    flex: 0 1 auto;
-    align-items: center;
-    gap: 0;
-}
-
-.hor-flex {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.rythm-row {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
 .rythm-tile {
     text-align: center;
     padding: 13px 40px;
+}
+
+.rythm-hover {
+    background-color: #ffe03d00;
+    position: absolute;
+    width: 255px;
+    height: 130px;
+}
+
+.rythm-hover.active {
+    background-color: #ffe03d77;
+    position: absolute;
+    width: 255px;
+    height: 130px;
+}
+
+.rythm-tile.active {
+    text-align: center;
+    padding: 13px 40px;
+    background-color: #ffe03d;
 }
 
 .table-expand {
@@ -154,26 +136,14 @@ td {
     border-width: 2px 0px 2px 0px;
 }
 
-.speed-block, .result-block {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    align-items: flex-end;
-    flex-wrap: wrap;
-}
-
 button {
     width: 98px;
     height: 75px;
     border-radius: 5px;
     border-width: 1px;
-    /*margin-left: auto;*/
     background-color: #ee00d6;
     color: #fff;
-    font-size: 26px;
-    font-weight: 1000;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    font-variant: small-caps;
+    padding: 0px;
 }
 
 h3 {
@@ -201,6 +171,7 @@ input {
     align-content: center;
     text-align: center;
     margin: 0px;
+    margin-left: auto;
 }
 
 input, .unit {
@@ -213,9 +184,16 @@ textarea:focus, input:focus {
 }
 
 .svg-triangle path {
-    stroke-width: 8px;
+    stroke-width: 16px;
     stroke: white;
     stroke-linejoin: round;
     stroke-linecap:round;
     fill: white;
+}
+
+.coupler {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0px 14px;
 }

@@ -1,6 +1,6 @@
 const button = document.querySelector("button");
 const input = document.querySelector("input");
-const rythmDivs = document.getElementsByClassName('rythm-tile')
+const rythmDivs = document.getElementsByClassName('rythm-hover')
 const riffText = document.getElementById("riff");
 
 const C2   = 0
