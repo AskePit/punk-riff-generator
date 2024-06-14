@@ -1,11 +1,14 @@
 body {
     margin: 0;
+
+    --accent-color: #ffe03d;
+    --accent-color-shaded: #ffe03dd8;
 }
 
 #global-grid {
     display: grid;
     grid-template-columns: 1fr min-content 1fr;
-    grid-template-rows: min-content min-content min-content min-content;
+    grid-template-rows: min-content min-content min-content 100px;
     grid-template-areas:
         "north-west north north-east"
         "west center east"
@@ -47,7 +50,6 @@ body {
 
 #south2-west {
     grid-area: south2-west;
-    background-color: #ffe03d;
 }
 
 #south2 {
@@ -56,18 +58,29 @@ body {
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    background-color: #ffe03d;
-    padding: 23px 0px;
 }
 
 #south2-east {
     grid-area: south2-east;
-    background-color: #ffe03d;
+}
+
+#south2-west, #south2, #south2-east {
+    background-color: var(--accent-color);
 }
 
 #logo {
     align-self: center;
-    padding: 25px 0px;
+    padding: 25px 0px 20px;
+}
+
+h3 {
+    font-family: 'Reddit Sans';
+    font-variant: normal;
+    font-size: 40px;
+    font-weight: 600;
+    font-variant: normal;
+    text-transform: uppercase;
+    margin: 3px;
 }
 
 table {
@@ -75,11 +88,24 @@ table {
 }
 
 td {
-    border-color: #ffe03d;
-    border-width: 2px;
+    --border-width: 2px;
+
+    border-color: var(--accent-color);
+    border-color: #848484;
+    border-width: var(--border-width);
     border-style: solid;
     margin: 0px;
     padding: 0px;
+}
+
+.table-expand {
+    width: 100%;
+    height: 100%;
+}
+
+.td-expand {
+    width: 100%;
+    border-width: var(--border-width) 0px var(--border-width) 0px;
 }
 
 .rythm-tile {
@@ -95,64 +121,17 @@ td {
 
 .rythm-tile.active {
     text-align: center;
-    background-color: #ffe03dd8;
+    background-color: var(--accent-color-shaded);
 }
 
 .rythm-tile:hover {
-    background-color: #ffe03dd8;
-}
-
-.table-expand {
-    width: 100%;
-    height: 100%;
-}
-
-.td-expand {
-    width: 100%;
-    border-width: 2px 0px 2px 0px;
-}
-
-button {
-    width: 98px;
-    height: 75px;
-    border-radius: 5px;
-    border-width: 1px;
-    stroke-width: 0px;
-    background-color: #ee00d6;
-    padding: 0px;
-    border: 0px solid;
-}
-
-button:hover {
-    background-color: black;
-}
-
-h3 {
-    font-family: 'Reddit Sans';
-    font-variant: normal;
-    font-size: 40px;
-    font-weight: 600;
-    font-variant: normal;
-    text-transform: uppercase;
-    margin: 3px;
-}
-
-#riff {
-    font-family: 'Reddit Sans';
-    font-size: 40px;
-    font-weight: 700;
-    color: #ee003d;
+    background-color: var(--accent-color-shaded);
 }
 
 input {
-    width: auto;
-    border-radius: 0px;
     border-width: 0px 0px 2px 0px;
-    border-color: #ffe03d;
-    align-content: center;
+    border-color: var(--accent-color);
     text-align: center;
-    margin: 0px;
-    margin-left: auto;
 }
 
 input, .unit {
@@ -165,17 +144,45 @@ textarea:focus, input:focus {
     outline: none;
 }
 
-.svg-triangle path {
-    stroke-width: 16px;
-    stroke: white;
-    stroke-linejoin: round;
-    stroke-linecap:round;
-    fill: white;
-}
-
 .coupler {
     display: flex;
     flex-direction: row;
     justify-content: center;
     gap: 0px 14px;
+}
+
+button {
+    --button-background: #ee00d6;
+    --button-background-hover: black;
+
+    width: 98px;
+    height: 75px;
+    border-radius: 5px;
+    border-width: 1px;
+    stroke-width: 0px;
+    background-color: var(--button-background);
+    padding: 0px;
+    border: 0px solid;
+}
+
+button:hover {
+    background-color: var(--button-background-hover);
+}
+
+.svg-triangle path {
+    stroke-width: 16px;
+    stroke: white;
+    stroke-linejoin: round;
+    fill: white;
+}
+
+#riff {
+    font-family: 'Reddit Sans';
+    font-size: 40px;
+    font-weight: 700;
+    color: #ee003d;
+}
+
+.sharp {
+    font-size: 26px;
 }

@@ -1,7 +1,8 @@
 const button = document.querySelector("button");
-const input = document.querySelector("input");
+const input = document.getElementById("bpm");
 const rythmDivs = document.getElementsByClassName('rythm-tile')
 const riffText = document.getElementById("riff");
+const riffHeader = document.querySelector("div#south2 h3");
 
 const C2   = 0
 const Csh2 = 1
@@ -271,7 +272,7 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
 }
 
-function generateNote(prevNote = undefined) {
+function generateNote() {
     return getRandomInt(E2, E3)
 }
 
@@ -297,36 +298,8 @@ for (let i = 0; i < rythmDivs.length; ++i) {
     }
 }
 
-button.onclick = async () => {
-    if (!context) {
-        await init();
-    }
-
-    for (let i = 0; i < soundNodes.length; ++i) {
-        soundNodes[i].stop(0)
-    }
-    soundNodes = []
-
-    /* playGuitarSample(D3)
-    playGuitarSample(A3)
-    playGuitarSample(D4) */
-
-    BPM = input.value
-    
-    const chords = DEBUG_MODE
-    ? [
-        createPowerChord(Fsh2),
-        createPowerChord(E2),
-        createPowerChord(G2),
-        createPowerChord(E2)
-    ]
-    : [
-        createPowerChord(generateNote()),
-        createPowerChord(generateNote()),
-        createPowerChord(generateNote()),
-        createPowerChord(generateNote())
-    ];
-
+function setRiffText(chords) {
+    // form the riff text
     riffText.textContent = ''
     for(let ch = 0; ch < chords.length; ++ch) {
         const tonica = chords[ch][0]
@@ -361,6 +334,41 @@ button.onclick = async () => {
 
         riffText.textContent += tonicaText + ' '
     }
+
+    // treat # specially
+    riffText.innerHTML = riffText.innerHTML.replaceAll('#', '<span class="sharp">#</span>')
+
+    // show header
+    riffHeader.innerHTML = 'Your riff&nbsp;:&nbsp;';
+}
+
+button.onclick = async () => {
+    if (!context) {
+        await init();
+    }
+
+    for (let i = 0; i < soundNodes.length; ++i) {
+        soundNodes[i].stop(0)
+    }
+    soundNodes = []
+
+    BPM = input.value
+    
+    const chords = DEBUG_MODE
+    ? [
+        createPowerChord(Fsh2),
+        createPowerChord(E2),
+        createPowerChord(G2),
+        createPowerChord(E2)
+    ]
+    : [
+        createPowerChord(generateNote()),
+        createPowerChord(generateNote()),
+        createPowerChord(generateNote()),
+        createPowerChord(generateNote())
+    ];
+
+    setRiffText(chords)
 
     const rythm = RYTHMS[rythmId]
 
