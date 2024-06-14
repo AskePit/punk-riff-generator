@@ -93,22 +93,12 @@ td {
     max-height: 100%;
 }
 
-/* .rythm-hover {
-    background-color: #ffe03d00;
-    position: absolute;
-    width: 255px;
-    height: 130px;
-}
-
-.rythm-hover.active {
-    background-color: #ffe03d;
-    position: absolute;
-    width: 240px;
-    height: 130px;
-} */
-
 .rythm-tile.active {
     text-align: center;
+    background-color: #ffe03dd8;
+}
+
+.rythm-tile:hover {
     background-color: #ffe03dd8;
 }
 
@@ -127,9 +117,14 @@ button {
     height: 75px;
     border-radius: 5px;
     border-width: 1px;
+    stroke-width: 0px;
     background-color: #ee00d6;
-    color: #fff;
     padding: 0px;
+    border: 0px solid;
+}
+
+button:hover {
+    background-color: black;
 }
 
 h3 {
@@ -138,15 +133,15 @@ h3 {
     font-size: 40px;
     font-weight: 600;
     font-variant: normal;
-    /* text-transform: uppercase; */
+    text-transform: uppercase;
     margin: 3px;
 }
 
 #riff {
-    font-family: 'Inconsolata';
-    font-size: 48px;
-    font-weight: 900;
-    color: #444;
+    font-family: 'Reddit Sans';
+    font-size: 40px;
+    font-weight: 700;
+    color: #ee003d;
 }
 
 input {
