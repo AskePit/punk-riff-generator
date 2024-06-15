@@ -219,13 +219,28 @@ function makeDistortionCurve(k = 20) {
     for (let i = 0; i < n_samples; ++i ) {
         const x = i * 2 / n_samples - 1;
 
+        // Bypass
+        //curve[i] = x;
+
+        // Square wave
         //curve[i] = Math.sign(k*x)
 
+        // Distortions
         //curve[i] = Math.tanh(k*x)
         //curve[i] = (3 + k)*Math.atan(Math.sinh(x*0.25)*5) / (Math.PI + k * Math.abs(x))
-        //curve[i] = 1/(1 + Math.exp(-k*x))
+        //curve[i] = 2/(1 + Math.exp(-k*x))-1
         //curve[i] = (2/Math.PI)*Math.atan(k*x*Math.PI/2)
         curve[i] = x*k/(1 + Math.abs(k*x))
+
+        // Overdrive
+        const OVERDRIVE_CLIP_TRESHOLD = 7
+        //curve[i] = OVERDRIVE_CLIP_TRESHOLD*(x/(Math.pow(1+Math.pow(Math.abs(OVERDRIVE_CLIP_TRESHOLD*x), k), 1/k)))
+
+        // Rectifier 50%
+        //curve[i] = x > 0 ? Math.abs(k*x) : 0
+
+        // Rectifier 100%
+        //curve[i] = Math.abs(k*x)
         
     }
     return curve;
