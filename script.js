@@ -92,9 +92,14 @@ const EIGHTH_DOT_PAUSE = -EIGHTH_DOT
 const SIXTEENTH_DOT_PAUSE = -SIXTEENTH_DOT
 const HALF_DOT_PAUSE = -HALF_DOT
 
+const KICK = 1
+const SNARE = 2
+const HI_HAT = 3
+
 // Settings
 let BPM = 140
 const VOLUME = 0.1
+const DRUMS_VOLUME = 0.7
 const GAIN = 400
 const DAMPING_START = 0
 const DAMPING_DURATION = 0.03
@@ -109,22 +114,37 @@ let context
 let distortion
 let compressor
 let gain
+let drumsGain
+let reverb
+let drumsReverb
 
 let guitarSample
+let kickSample
+let snareSample
+let hiHatSample
 let SAMPLE_NOTE
 
 let soundNodes = []
 
 let timeline = 0.0
+let drumsTimeline = 0.0
 
 async function init() {
     context = new AudioContext()
 
-    let reverb = await createReverb()
+    reverb = await createReverb()
+    drumsReverb = await createReverb()
+
     guitarSample = await createGuitarSample()
+    kickSample = await loadSample("./sound/drums_kick.wav")
+    snareSample = await loadSample("./sound/drums_snare.wav")
+    hiHatSample = await loadSample("./sound/drums_hi_hat.wav")
 
     gain = context.createGain()
     gain.gain.value = VOLUME
+
+    drumsGain = context.createGain()
+    drumsGain.gain.value = DRUMS_VOLUME
 
     distortion = context.createWaveShaper()
     distortion.curve = makeDistortionCurve(GAIN)
@@ -181,8 +201,18 @@ async function init() {
         context.destination
     ]
 
+    drumsEffectsChain = [
+        drumsReverb,
+        drumsGain,
+        context.destination
+    ]
+
     for (let i = 0; i < effectsChain.length - 1; ++i) {
         effectsChain[i].connect(effectsChain[i + 1])
+    }
+
+    for (let i = 0; i < drumsEffectsChain.length - 1; ++i) {
+        drumsEffectsChain[i].connect(drumsEffectsChain[i + 1])
     }
 }
 
@@ -198,17 +228,34 @@ async function createReverb() {
     return convolver
 }
 
-async function createGuitarSample() {
-    SAMPLE_NOTE = D3;
-    return fetch("./sound/guitar_d_string.wav")
+async function loadSample(path) {
+    return fetch(path)
         .then(response => response.arrayBuffer())
         .then(buffer => context.decodeAudioData(buffer))
+}
+
+async function createGuitarSample() {
+    SAMPLE_NOTE = D3;
+    return await loadSample("./sound/guitar_d_string.wav")
 }
 
 function createSampleSource(noteToPlay) {
     const source = context.createBufferSource()
     source.buffer = guitarSample
     source.playbackRate.value = 2 ** ((noteToPlay - SAMPLE_NOTE) / 12)
+    return source
+}
+
+function createDrumSource(drumType) {
+    const source = context.createBufferSource()
+    if (drumType == KICK) {
+        source.buffer = kickSample
+    } else if (drumType == SNARE) {
+        source.buffer = snareSample
+    } else {
+        source.buffer = hiHatSample
+    }
+    
     return source
 }
 
@@ -272,6 +319,34 @@ function playPause(duration) {
     timeline += seconds
 }
 
+function playDrum(drumType, duration) {
+    const seconds = duration / (BPM / 60)
+    const startTime = context.currentTime + drumsTimeline
+    const endTime = startTime + seconds
+
+    const sample = createDrumSource(drumType)
+
+    sample.connect(drumsEffectsChain[0])
+    sample.start(startTime)
+    sample.stop(endTime + DAMPING_DURATION)
+
+    soundNodes.push(sample)
+
+    drumsTimeline += seconds
+}
+
+function playKick(duration) {
+    playDrum(KICK, duration)
+}
+
+function playSnare(duration) {
+    playDrum(SNARE, duration)
+}
+
+function playHiHat(duration) {
+    playDrum(HI_HAT, duration)
+}
+
 SHORT = 0
 FULL = 1
 
@@ -298,6 +373,10 @@ RYTHMS = [
     [FOURTH_DOT, FOURTH, EIGHTH, EIGHTH, EIGHTH],
     [EIGHTH, EIGHTH, EIGHTH_PAUSE, EIGHTH],
     [EIGHTH, EIGHTH, EIGHTH_PAUSE, EIGHTH, EIGHTH, EIGHTH, EIGHTH_PAUSE, EIGHTH],
+]
+
+RYTHMS_RATIOS = [
+    1, 2, 2, 2, 1, 2
 ]
 
 for (let i = 0; i < rythmDivs.length; ++i) {
@@ -399,5 +478,18 @@ button.onclick = async () => {
             }
         }
     }
+
+    for(let bar = 0; bar < 4; ++bar) {
+        for(let ch = 0; ch < chords.length; ++ch) {
+            for(let i = 0; i < RYTHMS_RATIOS[rythmId]; ++i) {
+                playKick(EIGHTH)
+                playKick(EIGHTH)
+                //playHiHat(EIGHTH)
+                playSnare(FOURTH)
+                //playHiHat(EIGHTH)
+            }
+        }
+    }
     timeline = 0
+    drumsTimeline = 0
 };
