@@ -91,7 +91,7 @@ td {
     --border-width: 2px;
 
     border-color: var(--accent-color);
-    border-color: #848484;
+    /* border-color: #848484; */
     border-width: var(--border-width);
     border-style: solid;
     margin: 0px;

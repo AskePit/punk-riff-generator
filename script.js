@@ -98,9 +98,9 @@ const HI_HAT = 3
 
 // Settings
 let BPM = 140
-const VOLUME = 0.1
-const DRUMS_VOLUME = 0.7
-const GAIN = 400
+const GUITAR_VOLUME = 0.1
+const DRUMS_VOLUME = 0.8
+const GUITAR_GAIN = 400
 const DAMPING_START = 0
 const DAMPING_DURATION = 0.03
 const DEBUG_MODE = false
@@ -113,9 +113,9 @@ let effectsChain = []
 let context
 let distortion
 let compressor
-let gain
+let guitarGain
 let drumsGain
-let reverb
+let guitarReverb
 let drumsReverb
 
 let guitarSample
@@ -126,28 +126,28 @@ let SAMPLE_NOTE
 
 let soundNodes = []
 
-let timeline = 0.0
+let guitarTimeline = 0.0
 let drumsTimeline = 0.0
 
 async function init() {
     context = new AudioContext()
 
-    reverb = await createReverb()
+    guitarReverb = await createReverb()
     drumsReverb = await createReverb()
 
-    guitarSample = await createGuitarSample()
+    guitarSample = await loadGuitarSample()
     kickSample = await loadSample("./sound/drums_kick.wav")
     snareSample = await loadSample("./sound/drums_snare.wav")
     hiHatSample = await loadSample("./sound/drums_hi_hat.wav")
 
-    gain = context.createGain()
-    gain.gain.value = VOLUME
+    guitarGain = context.createGain()
+    guitarGain.gain.value = GUITAR_VOLUME
 
     drumsGain = context.createGain()
     drumsGain.gain.value = DRUMS_VOLUME
 
     distortion = context.createWaveShaper()
-    distortion.curve = makeDistortionCurve(GAIN)
+    distortion.curve = makeDistortionCurve(GUITAR_GAIN)
 
     // cut above 8400 Hz
     let cutHighs = context.createBiquadFilter()
@@ -196,8 +196,8 @@ async function init() {
         cutSand2,
         boostLow,
         peakMids,
-        reverb,
-        gain,
+        guitarReverb,
+        guitarGain,
         context.destination
     ]
 
@@ -216,30 +216,28 @@ async function init() {
     }
 }
 
-async function createReverb() {
-    const convolver = context.createConvolver();
-  
-    // load impulse response from file
-    convolver.normalize = false;
-    convolver.buffer = await fetch("./sound/room.wav")
-        .then(response => response.arrayBuffer())
-        .then(buffer => context.decodeAudioData(buffer))
-  
-    return convolver
-}
-
 async function loadSample(path) {
     return fetch(path)
         .then(response => response.arrayBuffer())
         .then(buffer => context.decodeAudioData(buffer))
 }
 
-async function createGuitarSample() {
+async function createReverb() {
+    const convolver = context.createConvolver();
+  
+    // load impulse response from file
+    convolver.normalize = false;
+    convolver.buffer = await loadSample("./sound/room.wav")
+  
+    return convolver
+}
+
+async function loadGuitarSample() {
     SAMPLE_NOTE = D3;
     return await loadSample("./sound/guitar_d_string.wav")
 }
 
-function createSampleSource(noteToPlay) {
+function createGuitarSource(noteToPlay) {
     const source = context.createBufferSource()
     source.buffer = guitarSample
     source.playbackRate.value = 2 ** ((noteToPlay - SAMPLE_NOTE) / 12)
@@ -293,13 +291,13 @@ function makeDistortionCurve(k = 20) {
     return curve;
 }
 
-function playSound(notes, duration) {
+function playGuitarSound(notes, duration) {
     const seconds = duration / (BPM / 60)
-    const startTime = context.currentTime + timeline
+    const startTime = context.currentTime + guitarTimeline
     const endTime = startTime + seconds
 
     for (let noteIndex = 0; noteIndex < notes.length; noteIndex++) {
-        const sample = createSampleSource(notes[noteIndex])
+        const sample = createGuitarSource(notes[noteIndex])
 
         sample.connect(effectsChain[0])
         sample.start(startTime)
@@ -308,15 +306,15 @@ function playSound(notes, duration) {
         soundNodes.push(sample)
     }
 
-    //gain.gain.setTargetAtTime(0, endTime - DAMPING_START, DAMPING_DURATION)
-    //gain.gain.setTargetAtTime(VOLUME, endTime + DAMPING_DURATION, DAMPING_DURATION)
+    //guitarGain.gain.setTargetAtTime(0, endTime - DAMPING_START, DAMPING_DURATION)
+    //guitarGain.gain.setTargetAtTime(GUITAR_VOLUME, endTime + DAMPING_DURATION, DAMPING_DURATION)
 
-    timeline += seconds
+    guitarTimeline += seconds
 }
 
-function playPause(duration) {
+function playGuitarPause(duration) {
     const seconds = Math.abs(duration) / (BPM / 60)
-    timeline += seconds
+    guitarTimeline += seconds
 }
 
 function playDrum(drumType, duration) {
@@ -333,18 +331,6 @@ function playDrum(drumType, duration) {
     soundNodes.push(sample)
 
     drumsTimeline += seconds
-}
-
-function playKick(duration) {
-    playDrum(KICK, duration)
-}
-
-function playSnare(duration) {
-    playDrum(SNARE, duration)
-}
-
-function playHiHat(duration) {
-    playDrum(HI_HAT, duration)
 }
 
 SHORT = 0
@@ -471,9 +457,9 @@ button.onclick = async () => {
             for(let i = 0; i < rythm.length; ++i) {
                 const duration = rythm[i];
                 if (duration >= 0) {
-                    playSound(chords[ch], rythm[i])
+                    playGuitarSound(chords[ch], rythm[i])
                 } else {
-                    playPause(duration)
+                    playGuitarPause(duration)
                 }
             }
         }
@@ -482,14 +468,14 @@ button.onclick = async () => {
     for(let bar = 0; bar < 4; ++bar) {
         for(let ch = 0; ch < chords.length; ++ch) {
             for(let i = 0; i < RYTHMS_RATIOS[rythmId]; ++i) {
-                playKick(EIGHTH)
-                playKick(EIGHTH)
-                //playHiHat(EIGHTH)
-                playSnare(FOURTH)
-                //playHiHat(EIGHTH)
+                playDrum(KICK, EIGHTH)
+                playDrum(KICK, EIGHTH)
+                //playDrum(HI_HAT, EIGHTH)
+                playDrum(SNARE, FOURTH)
+                //playDrum(HI_HAT, EIGHTH)
             }
         }
     }
-    timeline = 0
+    guitarTimeline = 0
     drumsTimeline = 0
 };
