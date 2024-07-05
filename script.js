@@ -108,15 +108,15 @@ const DEBUG_MODE = false
 // Runtime
 let rythmId = 3
 
-let effectsChain = []
+let guitarEffectsChain = []
+let drumsEffectsChain = []
 
 let context
 let distortion
 let compressor
 let guitarGain
 let drumsGain
-let guitarReverb
-let drumsReverb
+let reverb
 
 let guitarSample
 let kickSample
@@ -132,8 +132,7 @@ let drumsTimeline = 0.0
 async function init() {
     context = new AudioContext()
 
-    guitarReverb = await createReverb()
-    drumsReverb = await createReverb()
+    reverb = await createReverb()
 
     guitarSample = await loadGuitarSample()
     kickSample = await loadSample("./sound/drums_kick.wav")
@@ -188,7 +187,7 @@ async function init() {
     peakMids.Q.setValueAtTime(0.5, context.currentTime)
     peakMids.gain.setValueAtTime(7, context.currentTime)
 
-    effectsChain = [
+    guitarEffectsChain = [
         distortion,
         cutHighs,
         gumDown,
@@ -196,23 +195,30 @@ async function init() {
         cutSand2,
         boostLow,
         peakMids,
-        guitarReverb,
         guitarGain,
-        context.destination
+        reverb,
     ]
 
     drumsEffectsChain = [
-        drumsReverb,
         drumsGain,
+        reverb,
+    ]
+
+    finalChain = [
+        reverb,
         context.destination
     ]
 
-    for (let i = 0; i < effectsChain.length - 1; ++i) {
-        effectsChain[i].connect(effectsChain[i + 1])
+    for (let i = 0; i < guitarEffectsChain.length - 1; ++i) {
+        guitarEffectsChain[i].connect(guitarEffectsChain[i + 1])
     }
 
     for (let i = 0; i < drumsEffectsChain.length - 1; ++i) {
         drumsEffectsChain[i].connect(drumsEffectsChain[i + 1])
+    }
+
+    for (let i = 0; i < finalChain.length - 1; ++i) {
+        finalChain[i].connect(finalChain[i + 1])
     }
 }
 
@@ -299,7 +305,7 @@ function playGuitarSound(notes, duration) {
     for (let noteIndex = 0; noteIndex < notes.length; noteIndex++) {
         const sample = createGuitarSource(notes[noteIndex])
 
-        sample.connect(effectsChain[0])
+        sample.connect(guitarEffectsChain[0])
         sample.start(startTime)
         sample.stop(endTime + DAMPING_DURATION)
 
