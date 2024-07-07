@@ -98,12 +98,23 @@ const HI_HAT = 3
 
 // Settings
 let BPM = 140
-const GUITAR_VOLUME = 0.1
-const DRUMS_VOLUME = 0.8
+const GUITAR_VOLUME = 0.05
+const DRUMS_VOLUME = 0.9
 const GUITAR_GAIN = 400
 const DAMPING_START = 0
 const DAMPING_DURATION = 0.03
-const DEBUG_MODE = false
+const GUITAR_PLAYING_ERRORS = 0.07
+const DEBUG_MODE = true
+
+// Distortions
+const DISTORTION1 = 1
+const DISTORTION2 = 2
+const DISTORTION3 = 3
+const DISTORTION4 = 4
+const DISTORTION5 = 5
+const RECTIFIER1 = 6
+const RECTIFIER2 = 7
+const OVERDRIVE1 = 8
 
 // Runtime
 let rythmId = 3
@@ -112,11 +123,6 @@ let guitarEffectsChain = []
 let drumsEffectsChain = []
 
 let context
-let distortion
-let compressor
-let guitarGain
-let drumsGain
-let reverb
 
 let guitarSample
 let kickSample
@@ -132,21 +138,21 @@ let drumsTimeline = 0.0
 async function init() {
     context = new AudioContext()
 
-    reverb = await createReverb()
+    let reverb = await createReverb()
 
     guitarSample = await loadGuitarSample()
     kickSample = await loadSample("./sound/drums_kick.wav")
     snareSample = await loadSample("./sound/drums_snare.wav")
     hiHatSample = await loadSample("./sound/drums_hi_hat.wav")
 
-    guitarGain = context.createGain()
+    let guitarGain = context.createGain()
     guitarGain.gain.value = GUITAR_VOLUME
 
-    drumsGain = context.createGain()
+    let drumsGain = context.createGain()
     drumsGain.gain.value = DRUMS_VOLUME
 
-    distortion = context.createWaveShaper()
-    distortion.curve = makeDistortionCurve(GUITAR_GAIN)
+    let distortion = context.createWaveShaper()
+    distortion.curve = makeDistortionCurve(DISTORTION5, GUITAR_GAIN*1.5)
 
     // cut above 8400 Hz
     let cutHighs = context.createBiquadFilter()
@@ -187,6 +193,65 @@ async function init() {
     peakMids.Q.setValueAtTime(0.5, context.currentTime)
     peakMids.gain.setValueAtTime(7, context.currentTime)
 
+    // panning left
+    let panningLeft = context.createStereoPanner()
+    panningLeft.pan.setValueAtTime(-0.8, context.currentTime)
+
+    // ----------------------
+
+    let distortion2 = context.createWaveShaper()
+    distortion2.curve = makeDistortionCurve(DISTORTION2, GUITAR_GAIN)
+
+    // cut above 8400 Hz
+    let cutHighs2 = context.createBiquadFilter()
+    cutHighs2.type = "lowpass"
+    cutHighs2.frequency.setValueAtTime(8400, context.currentTime)
+    cutHighs2.Q.setValueAtTime(0, context.currentTime)
+
+    // cut around 1500 Hz
+    let gumDown2 = context.createBiquadFilter()
+    gumDown2.type = "notch"
+    gumDown2.frequency.setValueAtTime(1500, context.currentTime)
+    gumDown2.Q.setValueAtTime(5.5, context.currentTime)
+
+    // cut around 4900 Hz
+    let cutSand2_2 = context.createBiquadFilter()
+    cutSand2_2.type = "peaking"
+    cutSand2_2.frequency.setValueAtTime(4900, context.currentTime)
+    cutSand2_2.Q.setValueAtTime(3, context.currentTime)
+    cutSand2_2.gain.setValueAtTime(-8, context.currentTime)
+
+    // cut around 10000 Hz
+    let cutSand22 = context.createBiquadFilter()
+    cutSand22.type = "peaking"
+    cutSand22.frequency.setValueAtTime(10000, context.currentTime)
+    cutSand22.Q.setValueAtTime(3, context.currentTime)
+    cutSand22.gain.setValueAtTime(-14, context.currentTime)
+
+    // boost below 200 Hz
+    let boostLow2 = context.createBiquadFilter()
+    boostLow2.type = "lowshelf"
+    boostLow2.frequency.setValueAtTime(200, context.currentTime)
+    boostLow2.gain.setValueAtTime(1, context.currentTime)
+
+    // boost around 1350 Hz
+    let peakMids2 = context.createBiquadFilter()
+    peakMids2.type = "peaking"
+    peakMids2.frequency.setValueAtTime(1350, context.currentTime)
+    peakMids2.Q.setValueAtTime(0.5, context.currentTime)
+    peakMids2.gain.setValueAtTime(7, context.currentTime)
+
+    // panning right
+    let panningRight = context.createStereoPanner()
+    panningRight.pan.setValueAtTime(0.8, context.currentTime)
+
+    // boost around 1350 Hz
+    let peakMids3 = context.createBiquadFilter()
+    peakMids3.type = "peaking"
+    peakMids3.frequency.setValueAtTime(650, context.currentTime)
+    peakMids3.Q.setValueAtTime(0.5, context.currentTime)
+    peakMids3.gain.setValueAtTime(9, context.currentTime)
+
     guitarEffectsChain = [
         distortion,
         cutHighs,
@@ -195,11 +260,28 @@ async function init() {
         cutSand2,
         boostLow,
         peakMids,
+        panningLeft,
+        guitarGain,
+    ]
+
+    guitarEffectsChain2 = [
+        distortion2,
+        cutHighs2,
+        cutSand2_2,
+        cutSand22,
+        boostLow2,
+        peakMids2,
+        panningRight,
+        guitarGain,
+    ]
+
+    guitarEffectsFinalChain = [
         guitarGain,
         reverb,
     ]
 
     drumsEffectsChain = [
+        //peakMids3,
         drumsGain,
         reverb,
     ]
@@ -209,16 +291,16 @@ async function init() {
         context.destination
     ]
 
-    for (let i = 0; i < guitarEffectsChain.length - 1; ++i) {
-        guitarEffectsChain[i].connect(guitarEffectsChain[i + 1])
-    }
-
-    for (let i = 0; i < drumsEffectsChain.length - 1; ++i) {
-        drumsEffectsChain[i].connect(drumsEffectsChain[i + 1])
-    }
-
-    for (let i = 0; i < finalChain.length - 1; ++i) {
-        finalChain[i].connect(finalChain[i + 1])
+    for (const chain of [
+        guitarEffectsChain,
+        guitarEffectsChain2,
+        guitarEffectsFinalChain,
+        drumsEffectsChain,
+        finalChain
+    ]) {
+        for (let i = 0; i < chain.length - 1; ++i) {
+            chain[i].connect(chain[i + 1])
+        }
     }
 }
 
@@ -263,9 +345,11 @@ function createDrumSource(drumType) {
     return source
 }
 
-function makeDistortionCurve(k = 20) {
+function makeDistortionCurve(distortionType, k = 20) {
     const n_samples = 512
     const curve = new Float32Array(n_samples)
+
+    const OVERDRIVE_CLIP_TRESHOLD = 7
 
     for (let i = 0; i < n_samples; ++i ) {
         const x = i * 2 / n_samples - 1;
@@ -277,25 +361,32 @@ function makeDistortionCurve(k = 20) {
         //curve[i] = Math.sign(k*x)
 
         // Distortions
-        //curve[i] = Math.tanh(k*x)
-        //curve[i] = (3 + k)*Math.atan(Math.sinh(x*0.25)*5) / (Math.PI + k * Math.abs(x))
-        //curve[i] = 2/(1 + Math.exp(-k*x))-1
-        //curve[i] = (2/Math.PI)*Math.atan(k*x*Math.PI/2)
-        curve[i] = x*k/(1 + Math.abs(k*x))
-
-        // Overdrive
-        const OVERDRIVE_CLIP_TRESHOLD = 7
-        //curve[i] = OVERDRIVE_CLIP_TRESHOLD*(x/(Math.pow(1+Math.pow(Math.abs(OVERDRIVE_CLIP_TRESHOLD*x), k), 1/k)))
+        if (distortionType == DISTORTION1) {
+            curve[i] = Math.tanh(k*x)
+        } else if (distortionType == DISTORTION2) {
+            curve[i] = (3 + k)*Math.atan(Math.sinh(x*0.25)*5) / (Math.PI + k * Math.abs(x))
+        } else if (distortionType == DISTORTION3) {
+            curve[i] = 2/(1 + Math.exp(-k*x))-1
+        } else if (distortionType == DISTORTION4) {
+            curve[i] = (2/Math.PI)*Math.atan(k*x*Math.PI/2)
+        } else if (distortionType == DISTORTION5) {
+            curve[i] = x*k/(1 + Math.abs(k*x))
 
         // Rectifier 50%
-        //curve[i] = x > 0 ? Math.abs(k*x) : 0
+        } else if (distortionType == RECTIFIER1) {
+            curve[i] = x > 0 ? Math.abs(k*x) : 0
 
         // Rectifier 100%
-        //curve[i] = Math.abs(k*x)
-        
+        } else if (distortionType == RECTIFIER2) {
+            curve[i] = Math.abs(k*x)
+        } else if (distortionType == OVERDRIVE1) {
+            curve[i] = OVERDRIVE_CLIP_TRESHOLD*(x/(Math.pow(1+Math.pow(Math.abs(OVERDRIVE_CLIP_TRESHOLD*x), k), 1/k)))
+        }
     }
     return curve;
 }
+
+const randomFloat = (min, max) => Math.random() * (max - min) + min;
 
 function playGuitarSound(notes, duration) {
     const seconds = duration / (BPM / 60)
@@ -308,6 +399,16 @@ function playGuitarSound(notes, duration) {
         sample.connect(guitarEffectsChain[0])
         sample.start(startTime)
         sample.stop(endTime + DAMPING_DURATION)
+
+        soundNodes.push(sample)
+    }
+
+    for (let noteIndex = 0; noteIndex < notes.length; noteIndex++) {
+        const sample = createGuitarSource(notes[noteIndex])
+
+        sample.connect(guitarEffectsChain2[0])
+        sample.start(startTime + randomFloat(0, GUITAR_PLAYING_ERRORS))
+        sample.stop(endTime + DAMPING_DURATION + randomFloat(0, GUITAR_PLAYING_ERRORS))
 
         soundNodes.push(sample)
     }
