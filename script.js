@@ -104,7 +104,7 @@ const GUITAR_GAIN = 400
 const DAMPING_START = 0
 const DAMPING_DURATION = 0.03
 const GUITAR_PLAYING_ERRORS = 0.07
-const DEBUG_MODE = true
+const DEBUG_MODE = false
 
 // Distortions
 const DISTORTION1 = 1
